@@ -1,15 +1,12 @@
 /* myErpcClient.h */
 #ifdef __cplusplus
-
 extern "C" {
 #endif
 
-    void* init_client();
-
+void* test_init_client();
 
 #ifdef __cplusplus
 } // closing brace for extern "C"
-
 #endif
 
 

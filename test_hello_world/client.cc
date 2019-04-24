@@ -1,7 +1,13 @@
-#include "common.h"
+#ifdef __cplusplus
 extern "C" {
+#endif
 #include "myclient.h"
+#ifdef __cplusplus
 }
+#endif
+#include "common.h"
+
+/*
 erpc::Rpc<erpc::CTransport> *rpc;
 erpc::MsgBuffer req;
 erpc::MsgBuffer resp;
@@ -13,11 +19,26 @@ void sm_handler(int, erpc::SmEventType, erpc::SmErrType, void *) {}
 struct ERPC_blob {
   erpc::Nexus *my_nex;
 };
+*/
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+void *test_init_client() {
+  std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
+  erpc::Nexus *n = new erpc::Nexus(client_uri, 0, 0);
+  return n;
+}
+#ifdef __cplusplus
+}
+#endif
+
+/*
 
 void* init_client() {
   std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
   erpc::Nexus nexus(client_uri, 0, 0);
-  
+
   struct ERPC_blob* myblob = new ERPC_blob();
   myblob->my_nex = &nexus;
   return ((void *)myblob);
@@ -42,3 +63,4 @@ void main1() {
 
   delete rpc;
 }
+*/

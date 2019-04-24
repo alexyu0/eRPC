@@ -11,6 +11,7 @@ set(CMAKE_CXX_COMPILER g++)
 add_definitions(-std=c++11 -march=native -g)
 add_definitions(-Wall -Wextra -Werror -pedantic -Wsign-conversion -Wold-style-cast)
 add_definitions(-Wno-unused-function -Wno-nested-anon-types -Wno-keyword-macro)
+add_definitions(-fPIC)
 
 set(LIBRARIES ${LIBRARIES} rt numa pthread gflags)
 
@@ -33,7 +34,7 @@ set(TRANSPORT "dpdk" CACHE STRING "Datapath transport (infiniband/raw/dpdk)")
 option(ROCE "Use RoCE if TRANSPORT is infiniband" OFF)
 option(PERF "Compile for performance" OFF)
 set(PGO "none" CACHE STRING "Profile-guided optimization (generate/use/none)")
-set(LOG_LEVEL "warn" CACHE STRING "Logging level (none/error/warn/info/reorder/trace/cc)") 
+set(LOG_LEVEL "warn" CACHE STRING "Logging level (none/error/warn/info/reorder/trace/cc)")
 cmake_dependent_option(LTO "Use link time optimization" ON "PERF" OFF)
 
 # Parse the user-exposed options

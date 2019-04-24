@@ -1,3 +1,6 @@
+# .swp
+*.swp
+
 # Object files
 *.o
 *.ko
