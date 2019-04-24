@@ -3,7 +3,7 @@
 
 int main () {
   printf("hello\n");
-  //test_init_client();
+  init_client();
   printf("world\n");
   return 0;
 }

@@ -3,7 +3,7 @@
 extern "C" {
 #endif
 
-void* test_init_client();
+void* init_client();
 
 #ifdef __cplusplus
 } // closing brace for extern "C"

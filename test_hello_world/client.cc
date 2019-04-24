@@ -1,3 +1,5 @@
+#include "common.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -5,7 +7,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#include "common.h"
 
 /*
 erpc::Rpc<erpc::CTransport> *rpc;
@@ -21,29 +22,26 @@ struct ERPC_blob {
 };
 */
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-void *test_init_client() {
+void* init_client() {
   std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
   erpc::Nexus *n = new erpc::Nexus(client_uri, 0, 0);
-  return n;
+  return (void *)n;
+
+  /*
+  struct ERPC_blob* myblob = new ERPC_blob();
+  myblob->my_nex = &nexus;
+  return ((void *)myblob);
+  */
 }
 #ifdef __cplusplus
 }
 #endif
 
 /*
-
-void* init_client() {
-  std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
-  erpc::Nexus nexus(client_uri, 0, 0);
-
-  struct ERPC_blob* myblob = new ERPC_blob();
-  myblob->my_nex = &nexus;
-  return ((void *)myblob);
-}
-
 void main1() {
   std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
   erpc::Nexus nexus(client_uri, 0, 0);
