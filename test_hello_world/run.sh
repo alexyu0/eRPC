@@ -16,5 +16,5 @@ g++ -o test_client test_client.c \
 g++ -o test_server test_server.c \
   -I../src -L../build -L/users/alexyu0/eRPC/test_hello_world \
   -Wl,-rpath=/users/alexyu0/eRPC/test_hello_world \
-  -lclient -lerpc -lpthread -lnuma -ldl -libverbs -DINFINIBAND=true
+  -lserver -lerpc -lpthread -lnuma -ldl -libverbs -DINFINIBAND=true
 

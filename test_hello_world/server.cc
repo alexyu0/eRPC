@@ -25,9 +25,9 @@ extern "C" {
 erpc_server_t init_server() {
   std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort);
   erpc::Nexus nexus(server_uri, 0, 0);
+  printf("Inidiatlized nexus\n");
   nexus.register_req_func(kReqType, req_handler);
   auto *rpc = new erpc::Rpc<erpc::CTransport>(&nexus, nullptr, 0, nullptr);
-  rpc->run_event_loop(EVENT_LOOP_DURATION);
   printf("Initialized server\n");
   return (void *)rpc;
 }
