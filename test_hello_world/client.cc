@@ -29,6 +29,8 @@ extern "C" {
 void* init_client() {
   std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
   erpc::Nexus *n = new erpc::Nexus(client_uri, 0, 0);
+  // erpc::Rpc<erpc::CTransport> *rpc = new erpc::Rpc<erpc::CTransport>(n, nullptr, 0, nullptr);
+
   return (void *)n;
 
   /*
