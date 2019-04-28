@@ -3,6 +3,9 @@ Our NSDI 2019 [paper](http://www.cs.cmu.edu/~akalia/doc/nsdi19/erpc_nsdi19.pdf)
 describes the system in detail.
 [Documentation](http://www.cs.cmu.edu/~akalia/erpc_doc) is available online.
 
+
+cmake . -DPERF=OFF -DTRANSPORT=infiniband -DROCE=on; make -j
+
 Some highlights:
  * Multiple supported networks: Ethernet, InfiniBand, and RoCE
  * Low latency: 2.3 microseconds round-trip RPC latency with UDP over Ethernet
