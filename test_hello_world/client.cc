@@ -47,6 +47,11 @@ void* init_client() {
 extern "C" {
 #endif
 void set_message (void* myblob) {
+  if (myblob == nullptr) {
+    printf("erpc blob is null!");
+    return;
+  }
+
   erpc::Rpc<erpc::CTransport> *rpc = ((ERPC_blob*)myblob)->my_rpc;
   std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort);
   int session_num = rpc->create_session(server_uri, 0);
@@ -56,37 +61,27 @@ void set_message (void* myblob) {
   req = rpc->alloc_msg_buffer_or_die(kMsgSize);
   resp = rpc->alloc_msg_buffer_or_die(kMsgSize);
   
-  printf("before enq req");
   rpc->enqueue_request(session_num, kReqType, &req, &resp, cont_func, nullptr);
-  printf("after enq req");
-  //rpc->run_event_loop(100);
 
-  //delete rpc;
 }
 
 #ifdef __cplusplus
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+void delete_client (void* myblob) {
+  if (myblob != nullptr) {
+    ERPC_blob* b = (ERPC_blob*)myblob;
+    delete (b->my_rpc);
+    delete (b->my_nex);
+    delete b;
+  }
 
-/*
-void main1() {
-  std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
-  erpc::Nexus nexus(client_uri, 0, 0);
-
-  rpc = new erpc::Rpc<erpc::CTransport>(&nexus, nullptr, 0, sm_handler);
-
-  std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort);
-  int session_num = rpc->create_session(server_uri, 0);
-
-  while (!rpc->is_connected(session_num)) rpc->run_event_loop_once();
-
-  req = rpc->alloc_msg_buffer_or_die(kMsgSize);
-  resp = rpc->alloc_msg_buffer_or_die(kMsgSize);
-
-  rpc->enqueue_request(session_num, kReqType, &req, &resp, cont_func, nullptr);
-  rpc->run_event_loop(100);
-
-  delete rpc;
 }
-*/
+
+#ifdef __cplusplus
+}
+#endif
