@@ -3,7 +3,8 @@
 
 int main () {
   printf("hello\n");
-  init_client();
+  void* b = init_client();
+  set_message(b);
   printf("world\n");
   return 0;
 }

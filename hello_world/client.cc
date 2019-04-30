@@ -22,7 +22,8 @@ int main() {
   resp = rpc->alloc_msg_buffer_or_die(kMsgSize);
 
   rpc->enqueue_request(session_num, kReqType, &req, &resp, cont_func, nullptr);
-  rpc->run_event_loop(100);
+  printf("eng request end");
+  rpc->run_event_loop(1000000);
 
   delete rpc;
 }
