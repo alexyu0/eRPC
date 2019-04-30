@@ -27,7 +27,7 @@ struct ERPC_blob {
 #ifdef __cplusplus
 extern "C" {
 #endif
-void* init_client() {
+erpc_client_t init_client() {
   printf("in init client");
   std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
   erpc::Nexus *n = new erpc::Nexus(client_uri, 0, 0);
@@ -46,7 +46,7 @@ void* init_client() {
 #ifdef __cplusplus
 extern "C" {
 #endif
-void set_message (void* myblob) {
+void set_message (erpc_client_t myblob, const char *s, size_t len)) {
   if (myblob == nullptr) {
     printf("erpc blob is null!");
     return;
@@ -58,9 +58,10 @@ void set_message (void* myblob) {
 
   while (!rpc->is_connected(session_num)) rpc->run_event_loop_once();
 
-  req = rpc->alloc_msg_buffer_or_die(kMsgSize);
+  req = rpc->alloc_msg_buffer_or_die(len);
   resp = rpc->alloc_msg_buffer_or_die(kMsgSize);
   
+  req.buf = s;
   rpc->enqueue_request(session_num, kReqType, &req, &resp, cont_func, nullptr);
 
 }
@@ -72,7 +73,7 @@ void set_message (void* myblob) {
 #ifdef __cplusplus
 extern "C" {
 #endif
-void delete_client (void* myblob) {
+void delete_client (erpc_client_t myblob) {
   if (myblob != nullptr) {
     ERPC_blob* b = (ERPC_blob*)myblob;
     delete (b->my_rpc);

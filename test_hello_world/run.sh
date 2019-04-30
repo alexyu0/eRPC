@@ -18,3 +18,7 @@ g++ -o test_client test_client.c \
 #  -Wl,-rpath=/users/lizziyin/myeRPC/eRPC/test_hello_world \
 #  -lserver -lerpc -lpthread -lnuma -ldl -libverbs -DINFINIBAND=true
 
+sudo cp libclient.so /usr/lib/
+sudo cp libclient.so /usr/local/lib/
+sudo cp libserver.so /usr/lib/
+sudo cp libserver.so /usr/local/lib/

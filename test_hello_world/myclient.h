@@ -3,9 +3,13 @@
 extern "C" {
 #endif
 
-void* init_client();
-void set_message (void* myblob);
-void delete_client(void* myblob);
+typedef void* erpc_client_t;
+
+erpc_client_t init_client();
+
+void set_message(erpc_client_t myblob, const char *s, size_t len));
+
+void delete_client(erpc_client_t myblob);
 
 #ifdef __cplusplus
 } // closing brace for extern "C"
