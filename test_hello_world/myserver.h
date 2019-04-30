@@ -8,7 +8,7 @@ extern "C" {
 typedef void* erpc_server_t;
 
 /**
- * Initialize the eRPC server object 
+ * Initialize the eRPC server object
  */
 erpc_server_t init_server();
 
@@ -26,7 +26,7 @@ void run_event_loop(erpc_server_t s, size_t duration);
 
 
 /**
- * Clean up all server objects 
+ * Clean up all server objects
  */
 void delete_server(erpc_server_t s);
 

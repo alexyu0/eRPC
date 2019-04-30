@@ -46,7 +46,7 @@ erpc_client_t init_client() {
 #ifdef __cplusplus
 extern "C" {
 #endif
-void set_message (erpc_client_t myblob, const char *s, size_t len)) {
+void set_message (erpc_client_t myblob, const char *s, size_t len) {
   if (myblob == nullptr) {
     printf("erpc blob is null!");
     return;
@@ -60,8 +60,8 @@ void set_message (erpc_client_t myblob, const char *s, size_t len)) {
 
   req = rpc->alloc_msg_buffer_or_die(len);
   resp = rpc->alloc_msg_buffer_or_die(kMsgSize);
-  
-  req.buf = s;
+
+  req.buf = (unsigned char *)s;
   rpc->enqueue_request(session_num, kReqType, &req, &resp, cont_func, nullptr);
 
 }

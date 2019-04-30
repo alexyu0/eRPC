@@ -4,7 +4,7 @@
 int main () {
   printf("hello\n");
   void* b = init_client();
-  set_message(b);
+  //set_message(b);
   printf("world\n");
   delete_client(b);
   printf("success\n");

@@ -69,3 +69,7 @@ gdb_history
 *.swp
 src/config.h
 .ycm_extra_conf.py
+
+# other
+test_hello_world/test_client
+test_hello_world/test_server

@@ -13,7 +13,7 @@ int main () {
   run_event_loop(server, 0);
   printf("Ran event loop\n");
 
-  delete_server(server);
+  //delete_server(server);
   printf("Succesfully cleaned up server\n");
 
   return 0;
