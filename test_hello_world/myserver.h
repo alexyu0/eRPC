@@ -7,8 +7,15 @@ extern "C" {
 
 typedef void* erpc_server_t;
 
+/**
+ * Initialize the eRPC server object 
+ */
 erpc_server_t init_server();
 
+/**
+ * Get message received by server by copying it to buf and returning the
+ * message size. If no message is received, then return 0
+ */
 int get_message(char* buf);
 
 /**
@@ -17,10 +24,19 @@ int get_message(char* buf);
  */
 void run_event_loop(erpc_server_t s, size_t duration);
 
+
+/**
+ * Clean up all server objects 
+ */
+void delete_server(erpc_server_t s);
+
 /******************
  * Test Functions *
  ******************/
 
+/**
+ * Run server test suite
+ */
 void test_server(erpc_server_t s);
 
 #ifdef __cplusplus

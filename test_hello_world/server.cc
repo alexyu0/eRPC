@@ -174,4 +174,21 @@ void run_event_loop(erpc_server_t s, size_t duration) {
 #endif
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void delete_server(erpc_server_t s) {
+  assert(s != nullptr);
+  erpc::Rpc<erpc::CTransport>* server = (erpc::Rpc<erpc::CTransport>*)s;
+  assert(server != nullptr);
+  delete server;
+  delete nexus;
+  delete context;
+}
+
+#ifdef __cplusplus
+} // closing extern "C" bracket
+#endif
+
 
