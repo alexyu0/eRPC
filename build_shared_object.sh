@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-make -j
+cmake . -DPERF=OFF -DTRANSPORT=infiniband -DROCE=on; make -j
 objs=`find CMakeFiles/erpc.dir/src -type f -regex ".*.o" | tr '\n' ' '`
 g++ $objs -shared -o liberpc.so
 
