@@ -191,7 +191,9 @@ void IBTransport::init_verbs_structs() {
     throw std::runtime_error("Failed to modify QP to RTS");
   }
 
+  printf("pre check \n");
   // Check if driver is modded for fast RECVs
+  /*
   struct ibv_recv_wr mod_probe_wr;
   mod_probe_wr.wr_id = kModdedProbeWrID;
   struct ibv_recv_wr *bad_wr = &mod_probe_wr;
@@ -204,6 +206,9 @@ void IBTransport::init_verbs_structs() {
     LOG_WARN("Modded driver available.\n");
     use_fast_recv = true;
   }
+  */
+  use_fast_recv = false;
+  printf("set flag, leaving\n");
 }
 
 void IBTransport::init_mem_reg_funcs() {

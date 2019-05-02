@@ -2,6 +2,8 @@
 
 echo "\`run.sh\` script using" $(pwd) "as path"
 
+cd ..; ./build_shared_object.sh; cd test_hello_world
+
 sudo cp myclient.h /usr/include/
 sudo cp myclient.h /usr/local/include/
 sudo cp myserver.h /usr/include/

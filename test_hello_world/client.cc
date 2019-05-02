@@ -1,4 +1,5 @@
 #include "common.h"
+#include <unistd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,15 +29,22 @@ struct ERPC_blob {
 extern "C" {
 #endif
 erpc_client_t init_client() {
-  printf("in init client");
+  printf("in init client\n");
+  //sleep(20);
   std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
+  printf("hi\n");
   erpc::Nexus *n = new erpc::Nexus(client_uri, 0, 0);
+  printf("hi\n");
   erpc::Rpc<erpc::CTransport> *rpc = new erpc::Rpc<erpc::CTransport>(n, nullptr, 0, sm_handler);
 
 
+  printf("hi\n");
   struct ERPC_blob* myblob = new ERPC_blob();
+  printf("hi\n");
   myblob->my_nex = n;
+  printf("hi\n");
   myblob->my_rpc = rpc;
+  printf("hi\n");
   return ((void *)myblob);
 }
 #ifdef __cplusplus
