@@ -21,6 +21,7 @@ void sm_handler(int, erpc::SmEventType, erpc::SmErrType, void *) {}
 struct ERPC_blob {
   erpc::Nexus *my_nex;
   erpc::Rpc<erpc::CTransport> *my_rpc;
+  int session_num;
 };
 
 
@@ -29,22 +30,24 @@ struct ERPC_blob {
 extern "C" {
 #endif
 erpc_client_t init_client() {
-  printf("in init client\n");
-  //sleep(20);
-  std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
-  printf("hi\n");
-  erpc::Nexus *n = new erpc::Nexus(client_uri, 0, 0);
-  printf("hi\n");
-  erpc::Rpc<erpc::CTransport> *rpc = new erpc::Rpc<erpc::CTransport>(n, nullptr, 0, sm_handler);
-
-
-  printf("hi\n");
   struct ERPC_blob* myblob = new ERPC_blob();
-  printf("hi\n");
+
+  std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
+  erpc::Nexus *n = new erpc::Nexus(client_uri, 0, 0);
+  erpc::Rpc<erpc::CTransport> *rpc = new erpc::Rpc<erpc::CTransport>(n, nullptr, 0, sm_handler);
+  printf("ERPC: Connecting to server\n");
+  std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort);
+  int session_num = rpc->create_session(server_uri, 0);
+  while (!rpc->is_connected(session_num)) {
+    //session_num = rpc->create_session(server_uri, 0);
+    rpc->run_event_loop_once();
+  }
+  myblob->session_num = session_num;
+  printf("ERPC: Connected to eRPC server\n");
+
   myblob->my_nex = n;
-  printf("hi\n");
   myblob->my_rpc = rpc;
-  printf("hi\n");
+  printf("ERPC: Initialized client\n");
   return ((void *)myblob);
 }
 #ifdef __cplusplus
@@ -54,24 +57,35 @@ erpc_client_t init_client() {
 #ifdef __cplusplus
 extern "C" {
 #endif
-void set_message (erpc_client_t myblob, const char *s, size_t len) {
+void set_message(erpc_client_t myblob, const char *s, size_t len) {
   if (myblob == nullptr) {
     printf("erpc blob is null!");
     return;
   }
+  printf("ERPC: Sending message of len %zd\n", len);
 
   erpc::Rpc<erpc::CTransport> *rpc = ((ERPC_blob*)myblob)->my_rpc;
+  int session_num = ((ERPC_blob*)myblob)->session_num;
+
+  /*
+  printf("ERPC: Connecting to server\n");
   std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort);
   int session_num = rpc->create_session(server_uri, 0);
-
-  while (!rpc->is_connected(session_num)) rpc->run_event_loop_once();
+  while (!rpc->is_connected(session_num)) {
+    rpc->run_event_loop_once();
+    //printf("waiting for connection\n");
+  }
+  printf("ERPC: Connected to eRPC server\n");
+  */
 
   req = rpc->alloc_msg_buffer_or_die(len);
   resp = rpc->alloc_msg_buffer_or_die(kMsgSize);
 
-  req.buf = (unsigned char *)s;
+  //req.buf = (unsigned char *)s;
+  memcpy(req.buf, s, len);
   rpc->enqueue_request(session_num, kReqType, &req, &resp, cont_func, nullptr);
-
+  rpc->run_event_loop(100);
+  printf("ERPC: Message sent in client!\n");
 }
 
 #ifdef __cplusplus

@@ -28,17 +28,17 @@ class eRPCContext {
         delete p.first;
       }
     }
-    
+
     /**
      * Adds an message to the message queue
      */
     void EnqueueMessage(uint8_t* msg) {
-      /* Mesages have the general structure structure: 
+      /* Mesages have the general structure structure:
        * | type (char) | length (int) | data (char*) |
        */
       auto* buffer = new char[MAX_MESSAGE_SIZE];
       auto len = sprintf(buffer, "%s", msg);
-      
+
       {
         std::lock_guard<std::mutex> l(latch_);
         msg_queue_.emplace_back(buffer, len);
@@ -48,7 +48,7 @@ class eRPCContext {
 
 
 
-    /** 
+    /**
      * Pops the first message from the message queue, and copies it to buffer.
      * Returns 0 if message queue is empty, else returns length of message
      * returned.
@@ -109,7 +109,7 @@ erpc_server_t init_server() {
   printf("Initialized nexus\n");
   nexus->register_req_func(kReqType, req_handler);
   printf("Registered function\n");
-  
+
   // Initialize Context
   context = new eRPCContext();
   printf("initialized context\n");
@@ -125,8 +125,8 @@ erpc_server_t init_server() {
 
 void test_erpc_context() {
   auto* ctxt = new eRPCContext();
-   
-  uint8_t* msg = (uint8_t*)"test";  
+
+  uint8_t* msg = (uint8_t*)"test";
   ctxt->EnqueueMessage(msg);
   char* buf = new char[10];
   int size = ctxt->DequeueMessage(buf);
