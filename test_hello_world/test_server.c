@@ -1,20 +1,23 @@
 #include "stdio.h"
+#include "cstdlib"
 #include "myserver.h"
+#include <unistd.h>
 
 int main () {
-  printf("hello\n");
+  printf("initializing server\n");
   erpc_server_t server = init_server();
-  printf("world\n");
+  printf("Initialized server\n");
 
-  printf("Running tests\n");
-  test_server(server);
-  printf("All tests passed!\n");
 
-  run_event_loop(server, 0);
-  printf("Ran event loop\n");
+  char* msg = (char*)malloc(10);
+  int len;
+  printf("Waiting for message\n");
+  while ((len = get_message(&msg)), len <= 0) {
+    run_event_loop(server, 0);
+  }
 
-  //delete_server(server);
-  printf("Succesfully cleaned up server\n");
+  printf("Received msg (%s) of len %d\n", msg, len);
 
+  free(msg);
   return 0;
 }

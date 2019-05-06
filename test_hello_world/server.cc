@@ -28,17 +28,19 @@ class eRPCContext {
         delete p.first;
       }
     }
-    
+
     /**
      * Adds an message to the message queue
      */
-    void EnqueueMessage(uint8_t* msg) {
-      /* Mesages have the general structure structure: 
+    void EnqueueMessage(const erpc::MsgBuffer *req) {
+      /* Mesages have the general structure structure:
        * | type (char) | length (int) | data (char*) |
        */
-      auto* buffer = new char[MAX_MESSAGE_SIZE];
-      auto len = sprintf(buffer, "%s", msg);
-      
+      auto* msg = req->buf;
+      auto len = req->get_data_size();
+      printf("ERPC: The message received had len: %d\n", len);
+      auto* buffer = new char[len];
+      memcpy(buffer, msg, len);
       {
         std::lock_guard<std::mutex> l(latch_);
         msg_queue_.emplace_back(buffer, len);
@@ -48,20 +50,31 @@ class eRPCContext {
 
 
 
-    /** 
+    /**
      * Pops the first message from the message queue, and copies it to buffer.
      * Returns 0 if message queue is empty, else returns length of message
      * returned.
      */
-    int DequeueMessage(char* buffer) {
+    int DequeueMessage(char** buffer_ptr) {
         std::lock_guard<std::mutex> l(latch_);
         if (msg_queue_.empty()) {
+          //printf("dequeing empty msg queue\n");
           return 0;
         } else {
+          printf("a\n");
           auto& pair = msg_queue_.front();
+          printf("b\n");
           msg_queue_.pop_front();
-          auto len = sprintf(buffer, "%s", pair.first);
-          assert(len == pair.second);
+          printf("c\n");
+          //auto len = sprintf(buffer, "%s", pair.first);
+          printf("d\n");
+          char *buffer = new char[pair.second];
+          printf("buffer is %s - %d\n", pair.first, pair.second);
+          memcpy(buffer, pair.first, pair.second);
+          printf("e\n");
+          *buffer_ptr = buffer;
+          printf("f\n");
+          delete pair.first;
           return pair.second;
         }
     }
@@ -75,11 +88,14 @@ class eRPCContext {
 void req_handler(erpc::ReqHandle *req_handle, void *cntxt) {
 
   // Get message (requests from the client/master)
+  printf("req_handler start\n");
   const erpc::MsgBuffer *req = req_handle->get_req_msgbuf();
+  printf("size %d\n", req->get_data_size());
+  printf("ERPC: We received a message! In req_handler\n");
 
   // Add message to queue
   assert(cntxt == context);
-  context->EnqueueMessage(req->buf);
+  context->EnqueueMessage(req);
 
   return;
 }
@@ -89,7 +105,7 @@ void req_handler(erpc::ReqHandle *req_handle, void *cntxt) {
 extern "C" {
 #endif
 
-int get_message(char* buf) {
+int get_message(char** buf) {
   assert(context != nullptr);
   return context->DequeueMessage(buf);
 }
@@ -109,7 +125,7 @@ erpc_server_t init_server() {
   printf("Initialized nexus\n");
   nexus->register_req_func(kReqType, req_handler);
   printf("Registered function\n");
-  
+
   // Initialize Context
   context = new eRPCContext();
   printf("initialized context\n");
@@ -122,21 +138,21 @@ erpc_server_t init_server() {
 #ifdef __cplusplus
 }
 #endif
-
+/*
 void test_erpc_context() {
   auto* ctxt = new eRPCContext();
-   
-  uint8_t* msg = (uint8_t*)"test";  
+
+  uint8_t* msg = (uint8_t*)"test";
   ctxt->EnqueueMessage(msg);
   char* buf = new char[10];
-  int size = ctxt->DequeueMessage(buf);
+  int size = ctxt->DequeueMessage(&buf);
   printf("String: %s | Size: %d\n",buf, size);
   assert(size == 4);
 
   delete buf;
   delete ctxt;
 }
-
+*/
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -144,7 +160,8 @@ extern "C" {
 void test_server(erpc_server_t s) {
   erpc::Rpc<erpc::CTransport>* server = (erpc::Rpc<erpc::CTransport>*)s;
   assert(server != nullptr);
-  test_erpc_context();
+  //test_erpc_context();
+  printf("not doing anyting\n");
   printf("Succesfully casted server\n");
   return;
 }

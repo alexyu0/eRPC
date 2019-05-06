@@ -16,7 +16,7 @@ erpc_server_t init_server();
  * Get message received by server by copying it to buf and returning the
  * message size. If no message is received, then return 0
  */
-int get_message(char* buf);
+int get_message(char** buf);
 
 /**
  * Runs the event loop by calling server->run_event_loop(duration)
