@@ -1,12 +1,12 @@
 #include "stdio.h"
+#include "cstdlib"
 #include "myclient.h"
 
 int main () {
-  printf("hello\n");
   void* b = init_client();
-  //set_message(b);
-  printf("world\n");
-  delete_client(b);
-  printf("success\n");
+  char* msg = (char*)malloc(10);
+  int len = sprintf(msg, "testmsg");
+  set_message(b, msg, len);
+  printf("Should have sent message\n");
   return 0;
 }
