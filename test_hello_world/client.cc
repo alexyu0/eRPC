@@ -27,7 +27,7 @@ struct ERPC_blob {
 #ifdef __cplusplus
 extern "C" {
 #endif
-erpc_client_t init_client(int instance_no=0) {
+erpc_client_t init_client(int instance_no) {
   struct ERPC_blob* myblob = new ERPC_blob();
 
   std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort + instance_no);

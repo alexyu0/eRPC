@@ -4,7 +4,7 @@
 #include "myclient.h"
 
 int main () {
-  void* b = init_client();
+  void* b = init_client(0);
   char* msg = (char*)malloc(10);
   int len = sprintf(msg, "c");
   set_message(b, msg, len);

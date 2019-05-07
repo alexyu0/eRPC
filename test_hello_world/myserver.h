@@ -10,7 +10,7 @@ typedef void* erpc_server_t;
 /**
  * Initialize the eRPC server object
  */
-erpc_server_t init_server(int instance_no=0);
+erpc_server_t init_server(int instance_no);
 
 /**
  * Get message received by server by copying it to buf and returning the

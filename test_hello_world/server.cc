@@ -120,7 +120,7 @@ int get_message(char** buf) {
 #ifdef __cplusplus
 extern "C" {
 #endif
-erpc_server_t init_server(int instance_no=0) {
+erpc_server_t init_server(int instance_no) {
   //printf("Entering init_server\n");
   std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort + instance_no);
   //printf("Created server uri\n");

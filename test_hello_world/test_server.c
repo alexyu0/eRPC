@@ -7,7 +7,7 @@
 
 int main () {
   printf("initializing server\n");
-  erpc_server_t server = init_server();
+  erpc_server_t server = init_server(0);
   printf("Initialized server\n");
 
 
