@@ -10,11 +10,7 @@ extern "C" {
 #endif
 
 
-erpc::Rpc<erpc::CTransport> *rpc;
-erpc::MsgBuffer req;
-erpc::MsgBuffer resp;
-
-void cont_func(void *, void *) { printf("%s\n", resp.buf); }
+void cont_func(void *, void *) { printf("in cont\n"); }
 
 void sm_handler(int, erpc::SmEventType, erpc::SmErrType, void *) {}
 
@@ -22,6 +18,8 @@ struct ERPC_blob {
   erpc::Nexus *my_nex;
   erpc::Rpc<erpc::CTransport> *my_rpc;
   int session_num;
+  erpc::MsgBuffer reqbuf;
+  erpc::MsgBuffer respbuf;
 };
 
 
@@ -44,6 +42,13 @@ erpc_client_t init_client() {
   }
   myblob->session_num = session_num;
   printf("ERPC: Connected to eRPC server\n");
+
+  printf("ERPC: allocating msgbufs\n");
+  erpc::MsgBuffer req = rpc->alloc_msg_buffer_or_die(200000);
+  erpc::MsgBuffer resp = rpc->alloc_msg_buffer_or_die(200000);
+  myblob->reqbuf = req;
+  myblob->respbuf = resp;
+  printf("ERPC: allocated\n");
 
   myblob->my_nex = n;
   myblob->my_rpc = rpc;
@@ -78,12 +83,17 @@ void set_message(erpc_client_t myblob, const char *s, size_t len) {
   printf("ERPC: Connected to eRPC server\n");
   */
 
+  /*
   req = rpc->alloc_msg_buffer_or_die(len);
   resp = rpc->alloc_msg_buffer_or_die(kMsgSize);
+  */
 
-  //req.buf = (unsigned char *)s;
+  erpc::MsgBuffer &req = ((ERPC_blob *)myblob)->reqbuf;
+  rpc->resize_msg_buffer(&req, len);
   memcpy(req.buf, s, len);
-  rpc->enqueue_request(session_num, kReqType, &req, &resp, cont_func, nullptr);
+  rpc->enqueue_request(session_num, kReqType,
+      &((ERPC_blob *)myblob)->reqbuf, &((ERPC_blob *)myblob)->respbuf,
+      cont_func, nullptr);
   rpc->run_event_loop(100);
   printf("ERPC: Message sent in client!\n");
 }
