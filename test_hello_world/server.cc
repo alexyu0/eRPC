@@ -16,7 +16,7 @@ extern "C" {
 class eRPCContext;
 eRPCContext *context;
 erpc::Nexus *nexus;
-
+erpc::Rpc<erpc::CTransport> *rpc;
 
 class eRPCContext {
 
@@ -63,10 +63,15 @@ class eRPCContext {
         } else {
           auto& pair = msg_queue_.front();
           msg_queue_.pop_front();
+          if (pair.first[0] == 'c') {
+              printf("We received an EOF/STOP message. Returning -1\n");
+              delete pair.first;
+              return -1;
+          }
           char *buffer = new char[pair.second];
-          //printf("buffer is %s - %d\n", pair.first, pair.second);
           memcpy(buffer, pair.first, pair.second);
           *buffer_ptr = buffer;
+          //printf("Returning msg: %s\n", buffer);
           delete pair.first;
           return pair.second;
         }
@@ -88,6 +93,12 @@ void req_handler(erpc::ReqHandle *req_handle, void *cntxt) {
   // Add message to queue
   assert(cntxt == context);
   context->EnqueueMessage(req);
+
+  // send response
+  auto &resp = req_handle->pre_resp_msgbuf;
+  rpc->resize_msg_buffer(&resp, kMsgSize);
+  sprintf(reinterpret_cast<char *>(resp.buf), "enqueue");
+  rpc->enqueue_response(req_handle, &resp);
 
   return;
 }
@@ -122,7 +133,7 @@ erpc_server_t init_server(int instance_no=0) {
   context = new eRPCContext();
   //printf("initialized context\n");
 
-  auto *rpc = new erpc::Rpc<erpc::CTransport>(nexus, (void*)context, 0, nullptr);
+  rpc = new erpc::Rpc<erpc::CTransport>(nexus, (void*)context, 0, nullptr);
   //printf("Initialized server\n");
   return (void *)rpc;
 }
