@@ -38,7 +38,7 @@ class eRPCContext {
        */
       auto* msg = req->buf;
       auto len = req->get_data_size();
-      printf("ERPC: The message received had len: %d\n", len);
+      //printf("ERPC: The message received had len: %d\n", len);
       auto* buffer = new char[len];
       memcpy(buffer, msg, len);
       {
@@ -61,19 +61,12 @@ class eRPCContext {
           //printf("dequeing empty msg queue\n");
           return 0;
         } else {
-          printf("a\n");
           auto& pair = msg_queue_.front();
-          printf("b\n");
           msg_queue_.pop_front();
-          printf("c\n");
-          //auto len = sprintf(buffer, "%s", pair.first);
-          printf("d\n");
           char *buffer = new char[pair.second];
-          printf("buffer is %s - %d\n", pair.first, pair.second);
+          //printf("buffer is %s - %d\n", pair.first, pair.second);
           memcpy(buffer, pair.first, pair.second);
-          printf("e\n");
           *buffer_ptr = buffer;
-          printf("f\n");
           delete pair.first;
           return pair.second;
         }
@@ -88,10 +81,9 @@ class eRPCContext {
 void req_handler(erpc::ReqHandle *req_handle, void *cntxt) {
 
   // Get message (requests from the client/master)
-  printf("req_handler start\n");
   const erpc::MsgBuffer *req = req_handle->get_req_msgbuf();
-  printf("size %d\n", req->get_data_size());
-  printf("ERPC: We received a message! In req_handler\n");
+  //printf("size %d\n", req->get_data_size());
+  //printf("ERPC: We received a message! In req_handler\n");
 
   // Add message to queue
   assert(cntxt == context);
@@ -117,21 +109,21 @@ int get_message(char** buf) {
 #ifdef __cplusplus
 extern "C" {
 #endif
-erpc_server_t init_server() {
-  printf("Entering init_server\n");
-  std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort);
-  printf("Created server uri\n");
+erpc_server_t init_server(int instance_no=0) {
+  //printf("Entering init_server\n");
+  std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort + instance_no);
+  //printf("Created server uri\n");
   nexus = new erpc::Nexus(server_uri, 0, 0);
-  printf("Initialized nexus\n");
+  //printf("Initialized nexus\n");
   nexus->register_req_func(kReqType, req_handler);
-  printf("Registered function\n");
+  //printf("Registered function\n");
 
   // Initialize Context
   context = new eRPCContext();
-  printf("initialized context\n");
+  //printf("initialized context\n");
 
   auto *rpc = new erpc::Rpc<erpc::CTransport>(nexus, (void*)context, 0, nullptr);
-  printf("Initialized server\n");
+  //printf("Initialized server\n");
   return (void *)rpc;
 }
 
