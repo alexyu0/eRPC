@@ -10,13 +10,13 @@ typedef void* erpc_server_t;
 /**
  * Initialize the eRPC server object
  */
-erpc_server_t init_server();
+erpc_server_t init_server(int instance_no=0);
 
 /**
  * Get message received by server by copying it to buf and returning the
  * message size. If no message is received, then return 0
  */
-int get_message(char* buf);
+int get_message(char** buf);
 
 /**
  * Runs the event loop by calling server->run_event_loop(duration)

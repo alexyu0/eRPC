@@ -27,13 +27,13 @@ struct ERPC_blob {
 #ifdef __cplusplus
 extern "C" {
 #endif
-erpc_client_t init_client() {
+erpc_client_t init_client(int instance_no=0) {
   struct ERPC_blob* myblob = new ERPC_blob();
 
-  std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort);
+  std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort + instance_no);
   erpc::Nexus *n = new erpc::Nexus(client_uri, 0, 0);
   erpc::Rpc<erpc::CTransport> *rpc = new erpc::Rpc<erpc::CTransport>(n, nullptr, 0, sm_handler);
-  printf("ERPC: Connecting to server\n");
+  //printf("ERPC: Connecting to server\n");
   std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort);
   int session_num = rpc->create_session(server_uri, 0);
   while (!rpc->is_connected(session_num)) {
@@ -41,7 +41,7 @@ erpc_client_t init_client() {
     rpc->run_event_loop_once();
   }
   myblob->session_num = session_num;
-  printf("ERPC: Connected to eRPC server\n");
+  //printf("ERPC: Connected to eRPC server\n");
 
   printf("ERPC: allocating msgbufs\n");
   erpc::MsgBuffer req = rpc->alloc_msg_buffer_or_die(200000);
@@ -52,7 +52,7 @@ erpc_client_t init_client() {
 
   myblob->my_nex = n;
   myblob->my_rpc = rpc;
-  printf("ERPC: Initialized client\n");
+  //printf("ERPC: Initialized client\n");
   return ((void *)myblob);
 }
 #ifdef __cplusplus
@@ -67,7 +67,7 @@ void set_message(erpc_client_t myblob, const char *s, size_t len) {
     printf("erpc blob is null!");
     return;
   }
-  printf("ERPC: Sending message of len %zd\n", len);
+  //printf("ERPC: Sending message of len %zd\n", len);
 
   erpc::Rpc<erpc::CTransport> *rpc = ((ERPC_blob*)myblob)->my_rpc;
   int session_num = ((ERPC_blob*)myblob)->session_num;
@@ -95,7 +95,7 @@ void set_message(erpc_client_t myblob, const char *s, size_t len) {
       &((ERPC_blob *)myblob)->reqbuf, &((ERPC_blob *)myblob)->respbuf,
       cont_func, nullptr);
   rpc->run_event_loop(100);
-  printf("ERPC: Message sent in client!\n");
+  //printf("ERPC: Message sent in client!\n");
 }
 
 #ifdef __cplusplus
