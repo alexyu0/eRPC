@@ -2,8 +2,10 @@
 #include "cstdlib"
 #include "cstring"
 #include "myclient.h"
+#include "myserver.h"
 
 int main () {
+  //void* s = init_server(0);
   void* b = init_client(0);
   char* msg = (char*)malloc(10);
   int len = sprintf(msg, "c");

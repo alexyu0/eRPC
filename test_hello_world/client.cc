@@ -30,12 +30,20 @@ extern "C" {
 erpc_client_t init_client(int instance_no) {
   struct ERPC_blob* myblob = new ERPC_blob();
 
-  std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort + instance_no);
+  std::string client_uri;
+  std::string server_uri;
+  if (instance_no == 0) {
+    client_uri = kClientHostname + ":" + std::to_string(kUDPPort + instance_no);
+    server_uri = kServerHostname + ":" + std::to_string(kUDPPort + instance_no);
+  } else {
+    client_uri = kServerHostname + ":" + std::to_string(kUDPPort + instance_no);
+    server_uri = kClientHostname + ":" + std::to_string(kUDPPort + instance_no);
+  }
+
   erpc::Nexus *n = new erpc::Nexus(client_uri, 0, 0);
   erpc::Rpc<erpc::CTransport> *rpc = new erpc::Rpc<erpc::CTransport>(
-      n, nullptr, instance_no, sm_handler, instance_no);
+      n, nullptr, instance_no, sm_handler);
   //printf("ERPC: Connecting to server\n");
-  std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort + instance_no);
   int session_num = rpc->create_session(server_uri, instance_no);
   while (!rpc->is_connected(session_num)) {
     //session_num = rpc->create_session(server_uri, 0);

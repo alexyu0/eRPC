@@ -1,4 +1,6 @@
 #include "common.h"
+#include "stdio.h"
+#include <iostream>
 #include <mutex>
 
 #ifdef __cplusplus
@@ -122,7 +124,13 @@ extern "C" {
 #endif
 erpc_server_t init_server(int instance_no) {
   //printf("Entering init_server\n");
-  std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort + instance_no);
+  std::string server_uri;
+  if (instance_no == 0)
+    server_uri = kServerHostname + ":" + std::to_string(kUDPPort + instance_no);
+  else
+    server_uri = kClientHostname + ":" + std::to_string(kUDPPort + instance_no);
+  std::cout << "server URI: " << server_uri << "\n";
+
   //printf("Created server uri\n");
   nexus = new erpc::Nexus(server_uri, 0, 0);
   //printf("Initialized nexus\n");
@@ -133,8 +141,7 @@ erpc_server_t init_server(int instance_no) {
   context = new eRPCContext();
   //printf("initialized context\n");
 
-  rpc = new erpc::Rpc<erpc::CTransport>(nexus, (void*)context, instance_no, nullptr,
-      instance_no);
+  rpc = new erpc::Rpc<erpc::CTransport>(nexus, (void*)context, instance_no, nullptr);
   //printf("Initialized server\n");
   return (void *)rpc;
 }

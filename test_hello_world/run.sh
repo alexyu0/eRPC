@@ -28,9 +28,9 @@ sudo cp libserver.so /usr/lib/
 
 g++ -o test_client test_client.c \
   -I../src \
-  -lclient -lerpc -lpthread -lnuma -ldl -libverbs -DINFINIBAND=true
+  -lserver -lclient -lerpc -lpthread -lnuma -ldl -libverbs -DINFINIBAND=true
 
 g++ -o test_server test_server.c \
   -I../src \
-  -lserver -lerpc -lpthread -lnuma -ldl -libverbs -DINFINIBAND=true
+  -lclient -lserver -lerpc -lpthread -lnuma -ldl -libverbs -DINFINIBAND=true
 
