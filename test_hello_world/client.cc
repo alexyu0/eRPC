@@ -32,7 +32,8 @@ erpc_client_t init_client(int instance_no) {
 
   std::string client_uri = kClientHostname + ":" + std::to_string(kUDPPort + instance_no);
   erpc::Nexus *n = new erpc::Nexus(client_uri, 0, 0);
-  erpc::Rpc<erpc::CTransport> *rpc = new erpc::Rpc<erpc::CTransport>(n, nullptr, 0, sm_handler);
+  erpc::Rpc<erpc::CTransport> *rpc = new erpc::Rpc<erpc::CTransport>(
+      n, nullptr, instance_no, sm_handler);
   //printf("ERPC: Connecting to server\n");
   std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort);
   int session_num = rpc->create_session(server_uri, 0);

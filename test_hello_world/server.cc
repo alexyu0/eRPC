@@ -133,7 +133,7 @@ erpc_server_t init_server(int instance_no) {
   context = new eRPCContext();
   //printf("initialized context\n");
 
-  rpc = new erpc::Rpc<erpc::CTransport>(nexus, (void*)context, 0, nullptr);
+  rpc = new erpc::Rpc<erpc::CTransport>(nexus, (void*)context, instance_no, nullptr);
   //printf("Initialized server\n");
   return (void *)rpc;
 }
