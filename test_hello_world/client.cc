@@ -36,7 +36,7 @@ erpc_client_t init_client(int instance_no) {
       n, nullptr, instance_no, sm_handler);
   //printf("ERPC: Connecting to server\n");
   std::string server_uri = kServerHostname + ":" + std::to_string(kUDPPort);
-  int session_num = rpc->create_session(server_uri, 0);
+  int session_num = rpc->create_session(server_uri, instance_no);
   while (!rpc->is_connected(session_num)) {
     //session_num = rpc->create_session(server_uri, 0);
     rpc->run_event_loop_once();
