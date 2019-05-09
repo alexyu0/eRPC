@@ -4,13 +4,13 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-def get_dec_s(secs, scale):
+def get_dec_s(secs):
     base, exp = secs.split("-")
-    return float("0.{}{}".format("0" * int(exp), base)) * scale
+    return float("0.{}{}".format("0" * int(exp), base))
 
 def reject_outliers(data):
     np_data = np.array(data)
-    quartile_1, quartile_3 = np.percentile(np_data, [5, 95])
+    quartile_1, quartile_3 = np.percentile(np_data, [10, 90])
     iqr = quartile_3 - quartile_1
     lower_bound = quartile_1 - (iqr * 1.5)
     upper_bound = quartile_3 + (iqr * 1.5)
@@ -56,24 +56,21 @@ def graph_one_way_latency(standby_log, comm_method):
                 split_line = line.split("sendtime")[1].split()
 
                 send_time = split_line[1]
-                send_time_t = pd.Timestamp(send_time.split(".")[0])
-                send_time = get_dec_s(send_time.split(".")[1], 1000000)
+                # send_time_t = pd.Timestamp(send_time.split(".")[0])
+                # send_time = get_dec_s(send_time.split(".")[1])
                 # send_time = pd.Timestamp(send_time_t + strsend_time_s)
+                send_time = pd.Timestamp(send_time.split("-")[0])
 
                 receipt_time = split_line[4]
-                receipt_time_t = pd.Timestamp(receipt_time.split(".")[0])
-                receipt_time = get_dec_s(receipt_time.split(".")[1], 1000000)
+                # receipt_time_t = pd.Timestamp(receipt_time.split(".")[0])
+                # receipt_time = get_dec_s(receipt_time.split(".")[1])
                 # receipt_time = pd.Timestamp(receipt_time_t + receipt_time_s)
+                receipt_time = pd.Timestamp(receipt_time.split("-")[0])
                 
-                item = None
-                if (receipt_time_t - send_time_t).total_seconds() > 0:
-                    item = ((receipt_time_t - send_time_t).total_seconds() * 1000 + 
-                        (receipt_time - send_time))
-                else:
-                    item = receipt_time - send_time
+                # item = ((receipt_time_t - send_time_t).total_seconds() + 
+                #     (receipt_time - send_time)) * 1000000
+                item = (receipt_time - send_time).total_seconds() * 1000
                 latencies.append(item)
-                if item < 0:
-                    print(receipt_time_t, send_time_t, receipt_time, send_time)
     
     print(max(latencies), min(latencies))
     latencies = reject_outliers(latencies)
@@ -97,21 +94,20 @@ def graph_rtt_latency(primary_log, standby_log, comm_method):
                 split_line = line.split("sendtime")[1].split()
 
                 send_time = split_line[1]
-                send_time_t = pd.Timestamp(send_time.split(".")[0])
-                send_time = get_dec_s(send_time.split(".")[1], 1000000)
+                # send_time_t = pd.Timestamp(send_time.split(".")[0])
+                # send_time = get_dec_s(send_time.split(".")[1])
                 # send_time = pd.Timestamp(send_time_t + strsend_time_s)
+                send_time = pd.Timestamp(send_time.split("-")[0])
 
                 receipt_time = split_line[4]
-                receipt_time_t = pd.Timestamp(receipt_time.split(".")[0])
-                receipt_time = get_dec_s(receipt_time.split(".")[1], 1000000)
+                # receipt_time_t = pd.Timestamp(receipt_time.split(".")[0])
+                # receipt_time = get_dec_s(receipt_time.split(".")[1])
                 # receipt_time = pd.Timestamp(receipt_time_t + receipt_time_s)
+                receipt_time = pd.Timestamp(receipt_time.split("-")[0])
                 
-                item = None
-                if (receipt_time_t - send_time_t).total_seconds() > 0:
-                    item = ((receipt_time_t - send_time_t).total_seconds() * 1000 + 
-                        (receipt_time - send_time))
-                else:
-                    item = receipt_time - send_time
+                # item = ((receipt_time_t - send_time_t).total_seconds() + 
+                #     (receipt_time - send_time)) * 1000000
+                item = (receipt_time - send_time).total_seconds() * 1000
                 ms_latencies.append(item)
     
     sm_latencies = []
@@ -123,21 +119,20 @@ def graph_rtt_latency(primary_log, standby_log, comm_method):
                     split_line = line.split("reply_time")[1].split()
 
                     send_time = split_line[1]
-                    send_time_t = pd.Timestamp(send_time.split(".")[0])
-                    send_time = get_dec_s(send_time.split(".")[1], 1000000)
+                    # send_time_t = pd.Timestamp(send_time.split(".")[0])
+                    # send_time = get_dec_s(send_time.split(".")[1])
                     # send_time = pd.Timestamp(send_time_t + strsend_time_s)
+                    send_time = pd.Timestamp(send_time.split("-")[0])
 
                     receipt_time = split_line[4]
-                    receipt_time_t = pd.Timestamp(receipt_time.split(".")[0])
-                    receipt_time = get_dec_s(receipt_time.split(".")[1], 1000000)
+                    # receipt_time_t = pd.Timestamp(receipt_time.split(".")[0])
+                    # receipt_time = get_dec_s(receipt_time.split(".")[1])
                     # receipt_time = pd.Timestamp(receipt_time_t + receipt_time_s)
+                    receipt_time = pd.Timestamp(receipt_time.split("-")[0])
                     
-                    item = None
-                    if (receipt_time_t - send_time_t).total_seconds() > 0:
-                        item = ((receipt_time_t - send_time_t).total_seconds() * 1000 + 
-                            (receipt_time - send_time))
-                    else:
-                        item = receipt_time - send_time
+                    # item = ((receipt_time_t - send_time_t).total_seconds() + 
+                    #     (receipt_time - send_time)) * 1000000
+                    item = (receipt_time - send_time).total_seconds() * 1000
                     sm_latencies.append(item)
                     
                     alt = False
@@ -149,7 +144,8 @@ def graph_rtt_latency(primary_log, standby_log, comm_method):
     elif len(ms_latencies) < len(sm_latencies):
         sm_latencies = sm_latencies[0:len(ms_latencies)]
     print(len(ms_latencies), len(sm_latencies))
-    trips = zip(ms_latencies, sm_latencies)
+    trips = list(zip(ms_latencies, sm_latencies))
+    print(trips[0:10])
     latencies = [sum(trip) for trip in trips]
     
     print(max(latencies), min(latencies))
@@ -174,6 +170,6 @@ if __name__ == "__main__":
     primary_log = sys.argv[1]
     standby_log = sys.argv[2]
 
-    # graph_msg_size(primary_log, sys.argv[3])
+    graph_msg_size(primary_log, sys.argv[3])
     graph_one_way_latency(standby_log, sys.argv[3])
-    # graph_rtt_latency(primary_log, standby_log, sys.argv[3])
+    graph_rtt_latency(primary_log, standby_log, sys.argv[3])
